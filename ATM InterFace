@@ -1,0 +1,124 @@
+//BankAccount class
+public class BankAccount {
+	private double balance;
+
+	public BankAccount(double initialBalance) {
+		this.balance = initialBalance;
+	}
+
+	public double getBalance() {
+		return balance;
+	}
+
+	public void deposit(double amount) {
+		balance += amount;
+	}
+
+	public boolean withdraw(double amount) {
+		if (amount <= balance) {
+			balance -= amount;
+			return true;
+		} else {
+			return false;
+		}
+	}
+}
+
+
+//------------------------------------------------------
+
+import java.util.InputMismatchException;
+import java.util.Scanner;
+
+//ATM class to represent the ATM machine
+public class ATM {
+	private BankAccount account;
+
+	public ATM(BankAccount account) {
+		this.account = account;
+	}
+
+	public void displayMenu() {
+		System.out.println("Welcome to the ATM");
+		System.out.println("1. Check Balance");
+		System.out.println("2. Deposit");
+		System.out.println("3. Withdraw");
+		System.out.println("4. Exit");
+	}
+
+	public void checkBalance() {
+		System.out.println("Your current balance is: $" + account.getBalance());
+	}
+
+	public void deposit(double amount) {
+		account.deposit(amount);
+		System.out.println("Deposit successful.\nYour new balance is: $" + account.getBalance());
+	}
+
+	public void withdraw(double amount) {
+		if (account.withdraw(amount)) {
+			System.out.println("Withdrawal successful. \nYour new balance is: $" + account.getBalance());
+		} else {
+			System.err.println("Insufficient funds. Withdrawal failed.");
+		}
+	}
+
+	public static void main(String[] args) throws InterruptedException {
+		Scanner scanner = new Scanner(System.in);
+
+		// Create a bank account with initial balance of $1000
+		BankAccount bankAccount = new BankAccount(1000);
+		ATM atm = new ATM(bankAccount);
+
+		String choice;
+		do {
+			System.out.println("------------------------------------");
+			atm.displayMenu();
+			System.out.print("Enter your choice: ");
+			choice = scanner.nextLine();
+
+			try {
+				switch (choice) {
+				case "1":
+					atm.checkBalance();
+					break;
+				case "2":
+					System.out.print("Enter deposit amount: $");
+					double depositAmount = scanner.nextDouble();
+					if (depositAmount > 0)
+						atm.deposit(depositAmount);
+					else
+						System.err.println("Amount Shuld be Greater than 0..");
+					scanner.nextLine();
+
+					break;
+				case "3":
+					System.out.print("Enter withdrawal amount: $");
+					double withdrawAmount = scanner.nextDouble();
+					scanner.nextLine();
+					if (withdrawAmount > 0)
+						atm.withdraw(withdrawAmount);
+					else
+						System.err.println("Amount Shuld be Greater than 0..");
+					break;
+				case "4":
+					System.err.println("Thank you for using the ATM. Goodbye!");
+					scanner.close();
+					return;
+				default:
+					System.err.println("Invalid choice. Please try again.");
+				}
+			} catch (InputMismatchException e) {
+				System.err.println("Enter Numbers only....");
+				scanner.nextLine();
+				continue;
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			Thread.sleep(100);
+		} while (choice != "4");
+
+		scanner.close();
+	}
+}
